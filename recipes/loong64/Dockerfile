@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ARG GID=1000
 ARG UID=1000
@@ -8,20 +8,19 @@ RUN addgroup --gid $GID node \
 
 RUN apt-get update \
     && apt-get dist-upgrade -y \
-    && apt-get install -y software-properties-common \
-    && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
     && apt-get update \
     && apt-get install -y \
          git \
-	 g++-13 \
+         g++-12 \
          curl \
          make \
          python3 \
-	 python3-distutils \
+         python3-distutils \
          ccache \
          xz-utils
 
-RUN curl -L https://github.com/loongson/build-tools/releases/download/2024.11.01/x86_64-cross-tools-loongarch64-binutils_2.43.1-gcc_14.2.0-glibc_2.40.tar.xz | tar xJf - -C /opt
+RUN mkdir -p /opt/x-tools \
+    && curl -L https://github.com/loong64/cross-tools/releases/download/20250725/x86_64-cross-tools-loongarch64-unknown-linux-gnu-stable.tar.xz | tar xJf - -C /opt/x-tools
 
 COPY --chown=node:node run.sh /home/node/run.sh
 
