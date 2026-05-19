@@ -11,23 +11,19 @@ commit="$5"
 fullversion="$6"
 source_url="$7"
 source_urlbase="$8"
-config_flags="--partly-static --openssl-no-asm"
+config_flags="--openssl-no-asm --partly-static"
 
 cd /home/node
 
 tar -xf node.tar.xz
 cd "node-${fullversion}"
 
-MAJOR_VERSION=$(echo ${fullversion} | cut -d . -f 1 | tr --delete v)
-if [ "${MAJOR_VERSION}" = "18" ]; then
-  # https://github.com/nodejs/node/issues/56280#issuecomment-2713336973
-  curl -L https://github.com/loong64/node/raw/refs/heads/master/update-simdutf-6.2.1.patch | patch -p1
-fi
-
-export CC_host="ccache gcc-12"
-export CXX_host="ccache g++-12"
-export CC="ccache /opt/x-tools/loongarch64-unknown-linux-gnu/bin/loongarch64-unknown-linux-gnu-gcc"
-export CXX="ccache /opt/x-tools/loongarch64-unknown-linux-gnu/bin/loongarch64-unknown-linux-gnu-g++"
+export CCACHE_BASEDIR="$PWD"
+export CC_host="ccache gcc-13"
+export CXX_host="ccache g++-13"
+export CC="ccache /usr/bin/loongarch64-linux-gnu-gcc-14"
+export CXX="ccache /usr/bin/loongarch64-linux-gnu-g++-14"
+export CXXFLAGS="-DHWY_BROKEN_EMU128=0"
 
 make -j$(getconf _NPROCESSORS_ONLN) binary V= \
   DESTCPU="loong64" \
